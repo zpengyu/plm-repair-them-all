@@ -1,6 +1,7 @@
 from .strategy import PromptingStrategy
 from .strategies.infilling import InfillingPrompting
 from .strategies.instruct import InstructPrompting
+from .strategies.instruct_python import InstructPromptingPython
 
 
 class PromptStrategyRegistry:
@@ -11,6 +12,7 @@ class PromptStrategyRegistry:
     __STRATEGIES: dict[str, type] = {
         "infilling": InfillingPrompting,
         "instruct": InstructPrompting,
+        "instruct_python": InstructPromptingPython,
     }
 
     @classmethod

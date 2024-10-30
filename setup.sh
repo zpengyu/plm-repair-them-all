@@ -23,19 +23,19 @@
 #  poetry run ./gitbug-java setup;
 # fi
 
-# mkdir benchmarks/run_bug_run
-# cd benchmarks/run_bug_run
-# wget https://github.com/giganticode/run_bug_run_data/releases/download/v0.0.1/python_valid0.jsonl.gz
-# wget https://github.com/giganticode/run_bug_run_data/releases/download/v0.0.1/tests_all.jsonl.gz
-
-# gzip -d python_valid0.jsonl.gz
-# gzip -d tests_all.jsonl.gz
-# cd ../..
-
-apt-get install php-cli nodejs gcc g++ default-jdk ruby python3 golang-go bubblewrap
+mkdir benchmarks/run_bug_run
 cd benchmarks/run_bug_run
-gem install bundler
-bundle install
-bundle exec rbugr download 0.0.1
+wget https://github.com/giganticode/run_bug_run_data/releases/download/v0.0.1/python_valid0.jsonl.gz
+wget https://github.com/giganticode/run_bug_run_data/releases/download/v0.0.1/tests_all.jsonl.gz
+
+gzip -d python_valid0.jsonl.gz
+gzip -d tests_all.jsonl.gz
+cd ../..
+
+# apt-get install php-cli nodejs gcc g++ default-jdk ruby python3 golang-go bubblewrap
+# cd benchmarks/run_bug_run
+# gem install bundler
+# bundle install
+# bundle exec rbugr download 0.0.1
 
 
