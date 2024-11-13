@@ -26,10 +26,10 @@ class RunBugRunBug(RichBug):
 
         # Checkout the bug is the same as copying the entire benchmark
         # Copy source files
-        cmd = f"cd {self.benchmark.get_path()}; mkdir {path}; cp {'fixed' if fixed else 'buggy'}/{self.identifier}.py {path}"
+        cmd = f"cd {self.benchmark.get_path()}; cp {'fixed' if fixed else 'buggy'}/{self.identifier}.py {path}"
         run = subprocess.run(cmd, shell=True, capture_output=True, check=True)
         
-        # Copy test files
+        # TODO: Copy test files?
         # cmd = f"cd {self.benchmark.get_path()}; mkdir -p {path}/java_testcases/junit; cp java_testcases/junit/{self.identifier}_TEST.java {path}/java_testcases/junit; cp java_testcases/junit/QuixFixOracleHelper.java {path}/java_testcases/junit"
         # run = subprocess.run(cmd, shell=True, capture_output=True, check=True)
         return run.returncode == 0
@@ -53,10 +53,9 @@ class RunBugRunBug(RichBug):
         assert file_path.exists()
 
         for test_case in self.failing_tests:
-            
             test_input, test_output = test_case.split(' -> ')
-
             error_code, result = RunBugRunBug.execute_test_case(file_path, test_input)
+
             if error_code:
                 return TestResult(False)
             elif result != test_output.strip():
@@ -70,7 +69,7 @@ class RunBugRunBug(RichBug):
             cmd = f"""echo "{test_input}" | python {code_path}"""
         else:
             cmd = f"""python {code_path}"""
-
+        # TODO: timeout
         run = subprocess.run(
             cmd, 
             shell=True,
@@ -81,5 +80,4 @@ class RunBugRunBug(RichBug):
         return run.returncode, run.stderr.decode("utf-8").strip() if run.returncode else run.stdout.decode("utf-8").strip()
 
     def get_src_test_dir(self, path: str) -> str:
-        pass
-
+        return path
