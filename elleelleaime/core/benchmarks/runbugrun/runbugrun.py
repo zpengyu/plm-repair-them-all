@@ -86,12 +86,15 @@ class RunBugRun(Benchmark):
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             futures = []
             futures_to_tests = {}
-
+                
             for test_id, (test_input, test_output) in test_rows.iterrows():
+                test_input = test_input.strip()
+                test_output = test_output.strip()
+
                 if isinstance(errors, list):
                     result = errors[0]['exception'] + '\n' + errors[0]['output']
-                    cause = f"""Function with input {test_input.replace('"', "'")} failed with error: {result}""" 
-                    failing_tests[f"""{test_input} -> {test_output}"""] = cause
+                    cause = f"""Function with input: \n{test_input} \nexpected to output: \n{test_output} \nfailed with error: \n{result.strip()}""" 
+                    failing_tests[f"""test_{test_id}"""] = cause
                 else: # if there isn't a runtime exception, need to execute to get the cause of test failure
                     return failing_tests
                     # TODO: checkout first?
@@ -102,11 +105,11 @@ class RunBugRun(Benchmark):
                 returncode, result = future.result()
                 test_input, test_output = futures_to_tests[future]
                 if returncode:
-                    cause = f"""Function with input {test_input.replace('"', "'")} failed with error: {result}""" 
-                    failing_tests[f"""{test_input} -> {test_output}"""] = cause
+                    cause = f"""Function with input: \n{test_input} \nexpected to output: \n{test_output} \nfailed with error: \n{result.strip()}""" 
+                    failing_tests[f"""test_{test_id}"""] = cause
                 elif result != test_output.strip():
-                    cause = f"""Expected function with input {test_input.replace('"', "'")} to output {test_output.replace('"', "'").replace("'", r"\'")} but got {result}"""
-                    failing_tests[f"""{test_input} -> {test_output}"""] = cause
+                    cause = f"""Function with input: \n{test_input} \nexpected to output: \n{test_output} \nbut got: \n{result}"""
+                    failing_tests[f"""test_{test_id}"""] = cause
                 else:
                     continue
 
