@@ -3,6 +3,8 @@ from unidiff import PatchSet
 from elleelleaime.core.benchmarks.benchmark import Benchmark
 from elleelleaime.core.benchmarks.runbugrun.runbugrunbug import RunBugRunBug
 
+import os
+import json
 import subprocess
 import logging
 from tqdm import tqdm
@@ -45,7 +47,7 @@ class RunBugRun(Benchmark):
             check=True,
         )
 
-        buggy_submissions = python_df.drop_duplicates(subset=['buggy_submission_id'])#.head(10)
+        buggy_submissions = python_df.drop_duplicates(subset=['buggy_submission_id'])#.head(105)
 
         for prob_id, (buggy_submission_id, buggy_code, fixed_submission_id, fixed_code, errors) \
         in tqdm(
@@ -82,8 +84,14 @@ class RunBugRun(Benchmark):
 
     def get_failing_tests(self, buggy_file, errors, test_rows):
         failing_tests = {}
+        test_results = []
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        results_path = Path(self.get_path(), buggy_file.with_suffix('.jsonl'))
+        already_cached = os.path.exists(results_path)
+        if already_cached:
+            test_results = pd.read_json(results_path, lines=True).set_index('id')
+            
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             futures = []
             futures_to_tests = {}
                 
@@ -93,25 +101,42 @@ class RunBugRun(Benchmark):
 
                 if isinstance(errors, list):
                     result = errors[0]['exception'] + '\n' + errors[0]['output']
-                    cause = f"""Function with input: \n{test_input} \nexpected to output: \n{test_output} \nfailed with error: \n{result.strip()}""" 
+                    cause = f"""Function with input:\n{test_input}\nexpected to output:\n{test_output}\nfailed with error:\n{result.strip()}""" 
                     failing_tests[f"""test_{test_id}"""] = cause
-                else: # if there isn't a runtime exception, need to execute to get the cause of test failure
-                    return failing_tests
+                elif not already_cached: # if there isn't a runtime exception, need to execute to get the cause of test failure
                     # TODO: checkout first?
                     futures.append(executor.submit(RunBugRunBug.execute_test_case, buggy_file, test_input))
-                    futures_to_tests[futures[-1]] = (test_input, test_output)
-
-            for future in concurrent.futures.as_completed(futures):
-                returncode, result = future.result()
-                test_input, test_output = futures_to_tests[future]
-                if returncode:
-                    cause = f"""Function with input: \n{test_input} \nexpected to output: \n{test_output} \nfailed with error: \n{result.strip()}""" 
-                    failing_tests[f"""test_{test_id}"""] = cause
-                elif result != test_output.strip():
-                    cause = f"""Function with input: \n{test_input} \nexpected to output: \n{test_output} \nbut got: \n{result}"""
-                    failing_tests[f"""test_{test_id}"""] = cause
+                    futures_to_tests[futures[-1]] = (test_input.strip(), test_output.strip())
                 else:
-                    continue
+                    pass
+
+            if not already_cached:
+                for future in concurrent.futures.as_completed(futures):
+                    returncode, result = future.result()
+                    test_input, test_output = futures_to_tests[future]
+                    if returncode:
+                        cause = f"""Function with input:\n{test_input}\nexpected to output:\n{test_output}\nfailed with error:\n{result.strip()}""" 
+                        failing_tests[f"""test_{test_id}"""] = cause
+                    elif result != test_output:
+                        cause = f"""Function with input:\n{test_input}\nexpected to output:\n{test_output}\nbut got:\n{result}"""
+                        failing_tests[f"""test_{test_id}"""] = cause
+                    else:
+                        pass
+                    test_results.append({'id': test_id, 'input': test_input, 'output': test_output, 'returncode': returncode, 'result': result})
+
+                if test_results:
+                    pd.DataFrame(test_results).to_json(results_path, orient='records', lines=True)
+            
+            else:
+                for test_id, (test_input, test_output, returncode, result)  in test_results.iterrows():
+                    if returncode:
+                        cause = f"""Function with input: \n{test_input} \nexpected to output: \n{test_output} \nfailed with error: \n{result.strip()}""" 
+                        failing_tests[f"""test_{test_id}"""] = cause
+                    elif result != test_output:
+                        cause = f"""Function with input: \n{test_input} \nexpected to output: \n{test_output} \nbut got: \n{result}"""
+                        failing_tests[f"""test_{test_id}"""] = cause
+                    else:
+                        continue
 
         return failing_tests
 

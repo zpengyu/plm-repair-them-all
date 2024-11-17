@@ -69,13 +69,16 @@ class RunBugRunBug(RichBug):
             cmd = f"""echo "{test_input}" | python {code_path}"""
         else:
             cmd = f"""python {code_path}"""
-        # TODO: timeout
-        run = subprocess.run(
-            cmd, 
-            shell=True,
-            capture_output=True,
-            check=False,
-        )
+        try:
+            # TODO: timeout
+            run = subprocess.run(
+                cmd, 
+                shell=True,
+                capture_output=True,
+                check=False,
+            )
+        except OSError:
+            return 255, "OSError: [Errno 7] Argument list too long: '/bin/sh'"
 
         return run.returncode, run.stderr.decode("utf-8").strip() if run.returncode else run.stdout.decode("utf-8").strip()
 

@@ -39,7 +39,7 @@ class InstructPromptingPython(PromptingStrategy):
 
         failing_tests_string = ""
         for test_case, cause in failing_test_causes.items():
-            expected = re.search('expected to output: \n(.*)\n(?:failed|but got)', cause)
+            expected = re.search('expected to output:\n(.*)\n(?:failed|but got)', cause)
             expected = f"\"{expected.group(1)}\"" if expected else 'N/A'
             failing_tests_string += f"""Test `{test_case}`:
 ```python
