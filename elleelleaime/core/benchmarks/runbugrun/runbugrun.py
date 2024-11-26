@@ -48,15 +48,18 @@ class RunBugRun(Benchmark):
         )
 
         buggy_submissions = python_df.drop_duplicates(subset=['buggy_submission_id'])#.head(105)
-
-        for prob_id, (buggy_submission_id, buggy_code, fixed_submission_id, fixed_code, errors) \
-        in tqdm(
+        pbar = tqdm(
             buggy_submissions[['buggy_submission_id','buggy_code', 'fixed_submission_id', 'fixed_code', 'errors']].iterrows(), 
             total=len(buggy_submissions)
-        ):
+        )
 
+        for prob_id, (buggy_submission_id, buggy_code, fixed_submission_id, fixed_code, errors) \
+        in pbar:
             buggy_file = Path(self.path, 'buggy',  f'{prob_id}_{buggy_submission_id}.py')
             fixed_file = Path(self.path, 'fixed', f'{prob_id}_{buggy_submission_id}.py') # using buggy id for both to maintain file correspondence
+
+            pbar.set_postfix({'file':buggy_file})
+            pbar.update()
 
             with open(buggy_file, 'w') as f:
                 f.write(buggy_code)
@@ -130,10 +133,10 @@ class RunBugRun(Benchmark):
             else:
                 for test_id, (test_input, test_output, returncode, result)  in test_results.iterrows():
                     if returncode:
-                        cause = f"""Function with input: \n{test_input} \nexpected to output: \n{test_output} \nfailed with error: \n{result.strip()}""" 
+                        cause = f"""Function with input:\n{test_input}\nexpected to output:\n{test_output}\nfailed with error:\n{result.strip()}""" 
                         failing_tests[f"""test_{test_id}"""] = cause
                     elif result != test_output:
-                        cause = f"""Function with input: \n{test_input} \nexpected to output: \n{test_output} \nbut got: \n{result}"""
+                        cause = f"""Function with input:\n{test_input}\nexpected to output:\n{test_output}\nbut got:\n{result}"""
                         failing_tests[f"""test_{test_id}"""] = cause
                     else:
                         continue

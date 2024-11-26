@@ -2,6 +2,7 @@ import subprocess
 import shutil
 import os
 from pathlib import Path
+import re
 
 from elleelleaime.core.benchmarks.benchmark import Benchmark
 from elleelleaime.core.benchmarks.bug import RichBug
@@ -52,8 +53,9 @@ class RunBugRunBug(RichBug):
         file_path = Path(path, f"{self.get_identifier()}.py")
         assert file_path.exists()
 
-        for test_case in self.failing_tests:
-            test_input, test_output = test_case.split(' -> ')
+        for test_case, cause in self.failing_tests.items():
+            match = re.search('Function with input:\n(.*)\nexpected to output:\n(.*)\n(?:failed|but got)', cause, re.DOTALL)
+            test_input, test_output = match.group(1), match.group(2)
             error_code, result = RunBugRunBug.execute_test_case(file_path, test_input)
 
             if error_code:
@@ -70,15 +72,17 @@ class RunBugRunBug(RichBug):
         else:
             cmd = f"""python {code_path}"""
         try:
-            # TODO: timeout
             run = subprocess.run(
                 cmd, 
                 shell=True,
                 capture_output=True,
                 check=False,
+                timeout=1,
             )
         except OSError:
             return 255, "OSError: [Errno 7] Argument list too long: '/bin/sh'"
+        except subprocess.TimeoutExpired:
+            return 1, f"Command '{cmd}' timed out after 1 seconds"
 
         return run.returncode, run.stderr.decode("utf-8").strip() if run.returncode else run.stdout.decode("utf-8").strip()
 
