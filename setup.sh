@@ -1,4 +1,4 @@
-ll#!/bin/bash
+#!/bin/bash
 
 ## Submodules
 git submodule init;
@@ -31,4 +31,5 @@ wget https://github.com/giganticode/run_bug_run_data/releases/download/v0.0.1/te
 gzip -d python_valid0.jsonl.gz
 gzip -d tests_all.jsonl.gz
 gzip -d buggy_test_results.tgz
+tar xvf buggy_test_results.tar
 cd ../..

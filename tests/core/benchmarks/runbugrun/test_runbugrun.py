@@ -38,12 +38,13 @@ class TestRunBugRun:
             assert len(list(Path(fixed_path).glob("**/*"))) > 0
 
             # Assert that we can reach the py file
+            # TODO: this doesn't check correspondence to diff path
             return (
                 Path(
-                    buggy_path, f"{bug.get_identifier()}.py"
+                    buggy_path, 'buggy', f"{bug.get_identifier()}.py"
                 ).exists()
                 and Path(
-                    fixed_path, f"{bug.get_identifier()}.py"
+                    fixed_path, 'buggy', f"{bug.get_identifier()}.py"
                 ).exists()
             )
         finally:
@@ -65,7 +66,6 @@ class TestRunBugRun:
     def run_bug(self, bug: Bug) -> bool:
         buggy_path = f"{tempfile.gettempdir()}/elleelleaime-{getpass.getuser()}/{bug.get_identifier()}-buggy-{uuid.uuid4()}"
         fixed_path = f"{tempfile.gettempdir()}/elleelleaime-{getpass.getuser()}/{bug.get_identifier()}-fixed-{uuid.uuid4()}"
-
         try:
             # Checkout buggy version
             bug.checkout(buggy_path, fixed=False)

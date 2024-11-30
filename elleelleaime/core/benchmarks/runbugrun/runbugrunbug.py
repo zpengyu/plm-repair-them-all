@@ -26,17 +26,16 @@ class RunBugRunBug(RichBug):
         )
 
         # Checkout the bug is the same as copying the entire benchmark
-        # Copy source files
-        cmd = f"cd {self.benchmark.get_path()}; cp {'fixed' if fixed else 'buggy'}/{self.identifier}.py {path}"
+        # Copy source file
+        
+        subfolder = 'fixed' if fixed else 'buggy'
+        cmd = f"cd {self.benchmark.get_path()}; mkdir {path}/buggy; cp {subfolder}/{self.identifier}.py {path}/buggy" #FIXME
         run = subprocess.run(cmd, shell=True, capture_output=True, check=True)
         
-        # TODO: Copy test files?
-        # cmd = f"cd {self.benchmark.get_path()}; mkdir -p {path}/java_testcases/junit; cp java_testcases/junit/{self.identifier}_TEST.java {path}/java_testcases/junit; cp java_testcases/junit/QuixFixOracleHelper.java {path}/java_testcases/junit"
-        # run = subprocess.run(cmd, shell=True, capture_output=True, check=True)
         return run.returncode == 0
 
     def compile(self, path: str) -> CompileResult:
-        file_path = Path(path, f"{self.get_identifier()}.py")
+        file_path = Path(path, 'buggy', f"{self.get_identifier()}.py")
         assert file_path.exists()
 
         with open(file_path) as f:
@@ -50,14 +49,14 @@ class RunBugRunBug(RichBug):
             return CompileResult(False)
 
     def test(self, path: str) -> TestResult:
-        file_path = Path(path, f"{self.get_identifier()}.py")
+        file_path = Path(path, 'buggy', f"{self.get_identifier()}.py")
         assert file_path.exists()
 
         for test_case, cause in self.failing_tests.items():
             match = re.search('Function with input:\n(.*)\nexpected to output:\n(.*)\n(?:failed|but got)', cause, re.DOTALL)
             test_input, test_output = match.group(1), match.group(2)
             error_code, result = RunBugRunBug.execute_test_case(file_path, test_input)
-
+            
             if error_code:
                 return TestResult(False)
             elif result != test_output.strip():
@@ -88,3 +87,4 @@ class RunBugRunBug(RichBug):
 
     def get_src_test_dir(self, path: str) -> str:
         return path
+    

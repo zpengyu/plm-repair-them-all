@@ -164,7 +164,6 @@ class TestInstructPromptingRunBugRun:
             "p02714_476958"
         )
         assert bug is not None
-
         sample = generate_sample(
             bug=bug,
             prompt_strategy=TestInstructPromptingRunBugRun.PROMPT_STRATEGY,
