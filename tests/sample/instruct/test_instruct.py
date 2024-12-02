@@ -72,6 +72,7 @@ class TestInstructPromptingDefects4J:
             in sample["prompt"]
         )
 
+
 class TestInstructPromptingGitBugJava:
     GITBUGJAVA: Benchmark
     PROMPT_STRATEGY: str = "instruct"
@@ -148,6 +149,7 @@ class TestInstructPromptingGitBugJava:
         # Assert that the prompt is properly constructed
         assert sample["prompt"] is None
 
+
 class TestInstructPromptingRunBugRun:
     RUNBUGRUN: Benchmark
     PROMPT_STRATEGY: str = "instruct_python"
@@ -158,11 +160,8 @@ class TestInstructPromptingRunBugRun:
         assert TestInstructPromptingRunBugRun.RUNBUGRUN is not None
         TestInstructPromptingRunBugRun.RUNBUGRUN.initialize()
 
-
     def test_p02714_476958(self):
-        bug = TestInstructPromptingRunBugRun.RUNBUGRUN.get_bug(
-            "p02714_476958"
-        )
+        bug = TestInstructPromptingRunBugRun.RUNBUGRUN.get_bug("p02714_476958")
         assert bug is not None
         sample = generate_sample(
             bug=bug,
@@ -171,35 +170,21 @@ class TestInstructPromptingRunBugRun:
 
         # Assert we are dealing with the correct bug and strategy
         assert sample["identifier"] == "p02714_476958"
-        assert sample["prompt_strategy"] == "instruct_python" 
-        
+        assert sample["prompt_strategy"] == "instruct_python"
+
         # Assert that the buggy code and fixed code are properly separated
         assert "print(c)" in sample["buggy_code"]
         assert "print(c)" not in sample["fixed_code"]
-        assert (
-            "for d in range(1, n//2 + 1):"
-            in sample["fixed_code"]
-        )
-        assert (
-            "for d in range(1, n//2):"
-            in sample["buggy_code"]
-        )
+        assert "for d in range(1, n//2 + 1):" in sample["fixed_code"]
+        assert "for d in range(1, n//2):" in sample["buggy_code"]
 
         # Assert that the prompt is properly constructed
-        assert (
-            """assert result == \"2356504491\""""
-            in sample["prompt"]
-        )
+        assert """assert result == \"2356504491\"""" in sample["prompt"]
 
-        assert (
-            """but got:"""
-            in sample["prompt"]
-        )
+        assert """but got:""" in sample["prompt"]
 
     def test_p03062_876858(self):
-        bug = TestInstructPromptingRunBugRun.RUNBUGRUN.get_bug(
-            "p03062_876858"
-        )
+        bug = TestInstructPromptingRunBugRun.RUNBUGRUN.get_bug("p03062_876858")
         assert bug is not None
 
         sample = generate_sample(
@@ -214,21 +199,9 @@ class TestInstructPromptingRunBugRun:
         # Assert that the buggy code and fixed code are properly separated
         assert "B = list(map(abs,a))" in sample["buggy_code"]
         assert "B = list(map(abs,a))" not in sample["fixed_code"]
-        assert (
-            "B = list(map(abs, A))"
-            in sample["fixed_code"]
-        )
-        assert (
-            "B = list(map(abs, A))"
-            not in sample["buggy_code"]
-        )
+        assert "B = list(map(abs, A))" in sample["fixed_code"]
+        assert "B = list(map(abs, A))" not in sample["buggy_code"]
 
         # Assert that the prompt is properly constructed
-        assert (
-            """assert result == \"26\""""
-            in sample["prompt"]
-        )
-        assert (
-            """failed with error:"""
-            in sample["prompt"]
-        )
+        assert """assert result == \"26\"""" in sample["prompt"]
+        assert """failed with error:""" in sample["prompt"]

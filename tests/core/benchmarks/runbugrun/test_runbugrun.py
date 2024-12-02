@@ -9,8 +9,9 @@ import tqdm
 import getpass, tempfile
 import concurrent.futures
 
+
 class TestRunBugRun:
-    
+
     def test_get_benchmark(self):
         runbugrun = get_benchmark("runbugrun")
         assert runbugrun is not None
@@ -21,7 +22,6 @@ class TestRunBugRun:
         assert bugs is not None
         assert len(bugs)
         assert len(set([bug.get_identifier() for bug in bugs]))
-
 
     def checkout_bug(self, bug: Bug) -> bool:
         buggy_path = f"{tempfile.gettempdir()}/elleelleaime-{getpass.getuser()}/{bug.get_identifier()}-buggy-{uuid.uuid4()}"
@@ -40,12 +40,8 @@ class TestRunBugRun:
             # Assert that we can reach the py file
             # TODO: this doesn't check correspondence to diff path
             return (
-                Path(
-                    buggy_path, 'buggy', f"{bug.get_identifier()}.py"
-                ).exists()
-                and Path(
-                    fixed_path, 'buggy', f"{bug.get_identifier()}.py"
-                ).exists()
+                Path(buggy_path, "buggy", f"{bug.get_identifier()}.py").exists()
+                and Path(fixed_path, "buggy", f"{bug.get_identifier()}.py").exists()
             )
         finally:
             shutil.rmtree(buggy_path, ignore_errors=True)
@@ -81,17 +77,17 @@ class TestRunBugRun:
             test_result = bug.test(buggy_path)
             if test_result.is_passing():
                 return False
-            
+
             # Compile fixed version
             compile_result = bug.compile(fixed_path)
             if not compile_result.is_passing():
                 return False
-            
+
             # Test fixed version
             test_result = bug.test(fixed_path)
             if not test_result.is_passing():
                 return False
-            
+
             return True
         finally:
             shutil.rmtree(buggy_path, ignore_errors=True)
@@ -102,7 +98,7 @@ class TestRunBugRun:
         assert runbugrun is not None
         runbugrun.initialize()
 
-         # We only run 3 bugs to not take too long
+        # We only run 3 bugs to not take too long
         bugs = list(runbugrun.get_bugs())[:3]
         assert bugs is not None
 

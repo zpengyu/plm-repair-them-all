@@ -12,7 +12,7 @@ benchmarks = {
     "HumanEvalJava": HumanEvalJava,
     "QuixBugs": QuixBugs,
     "GitBugJava": GitBugJava,
-    "RunBugRun": RunBugRun
+    "RunBugRun": RunBugRun,
 }
 
 
