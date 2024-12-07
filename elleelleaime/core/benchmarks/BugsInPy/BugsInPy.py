@@ -13,7 +13,7 @@ import re
 import pandas as pd
 
 
-class BugsInpy(Benchmark):
+class BugsInPy(Benchmark):
     """
     The class for representing the BugsInPy benchmark.
     """
@@ -61,7 +61,7 @@ class BugsInpy(Benchmark):
             )
 
         # TODO: Check if/how this is doable
-        # # Initialize dataset
+        # Initialize dataset
         # for project_name in project_names:
         #     # Extract failing test and trigger cause
         #     run = subprocess.run(
@@ -82,8 +82,14 @@ class BugsInpy(Benchmark):
 
             # TODO: Check if/how this is doable
             # Extract failing test cases and trigger causes
-            # failing_test_cases = df[df["bug_id"] == bug_id]["tests"].values[0]
-            # trigger_cause = df[df["bug_id"] == bug_id]["errors"].values[0]
+            failing_test_cases = df[df["bug_id"] == bug_id]["tests"].values[0]
+            trigger_cause = df[df["bug_id"] == bug_id]["errors"].values[0]
+
+            # In file (Figure out how file content will look like): `benchmarks/BugsInPy/projects/{project_name}/{project_name}-fail.txt`
+            fail_path = f"benchmarks/BugsInPy/projects/{project_name}/{project_name}-fail.txt"
+            with open(fail_path, "r", encoding="ISO-8859-1") as fail_file:
+                failing_tests = fail_file.read()
+
 
             # failing_tests = {}
             # for failing_test_case in failing_test_cases.split(";"):
