@@ -29,8 +29,8 @@ class RunBugRun(Benchmark):
         python_path = Path(self.get_path(), "python_valid0.jsonl")
         test_path = Path(self.get_path(), "tests_all.jsonl")
 
-        python_df = pd.read_json(python_path, lines=True).set_index("problem_id")
-        test_df = pd.read_json(test_path, lines=True).set_index("id")
+        python_df = pd.read_json(open(python_path), lines=True).set_index("problem_id")
+        test_df = pd.read_json(open(test_path), lines=True).set_index("id")
 
         subprocess.run(
             f"mkdir -p {self.path}/buggy",
@@ -115,7 +115,7 @@ class RunBugRun(Benchmark):
         results_path = Path(self.get_path(), buggy_file.with_suffix(".jsonl"))
         already_cached = os.path.exists(results_path)
         if already_cached:
-            test_results = pd.read_json(results_path, lines=True).set_index("id")
+            test_results = pd.read_json(open(results_path), lines=True).set_index("id")
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             futures = []
