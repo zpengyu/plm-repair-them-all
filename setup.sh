@@ -23,7 +23,7 @@ if [ -z "$CI" ]; then
  poetry run ./gitbug-java setup;
 fi
 
-mkdir benchmarks/run_bug_run;
+mkdir -p benchmarks/run_bug_run;
 cd benchmarks/run_bug_run;
 wget https://github.com/giganticode/run_bug_run_data/releases/download/v0.0.1/python_valid0.jsonl.gz;
 wget https://github.com/giganticode/run_bug_run_data/releases/download/v0.0.1/tests_all.jsonl.gz;
