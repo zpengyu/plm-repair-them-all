@@ -99,7 +99,7 @@ class TestRunBugRun:
         runbugrun.initialize()
 
         # We only run 3 bugs to not take too long
-        bugs = list(runbugrun.get_bugs())[:3]
+        bugs = sorted(list(runbugrun.get_bugs()), key=lambda bug: bug.identifier)[:20]
         assert bugs is not None
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
@@ -110,7 +110,15 @@ class TestRunBugRun:
                 futures.append(executor.submit(self.run_bug, bug))
                 futures_to_bugs[futures[-1]] = bug
             # Wait for all tasks to complete
-            for future in tqdm.tqdm(concurrent.futures.as_completed(futures)):
+            pbar = tqdm.tqdm(concurrent.futures.as_completed(futures))
+            for future in pbar:
+                pbar.set_postfix(
+                    {
+                        "bug": futures_to_bugs[future].identifier,
+                        "tests": len(bug.failing_tests),
+                    }
+                )
+                pbar.update()
                 result = future.result()
                 if not result:
                     assert (
