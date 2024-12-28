@@ -58,7 +58,7 @@ class TestDefects4J:
         defects4j.initialize()
 
         # Run only the first 3 bugs to not take too long
-        bugs = list(defects4j.get_bugs())[:3]
+        bugs = defects4j.get_bugs()[:3]
         assert bugs is not None
 
         for bug in bugs:
@@ -107,7 +107,7 @@ class TestDefects4J:
         assert defects4j is not None
         defects4j.initialize()
 
-        bugs = list(defects4j.get_bugs())
+        bugs = defects4j.get_bugs()
         assert bugs is not None
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
@@ -130,7 +130,7 @@ class TestDefects4J:
         assert defects4j is not None
         defects4j.initialize()
 
-        bugs = list(defects4j.get_bugs())
+        bugs = defects4j.get_bugs()
         assert bugs is not None
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
@@ -175,7 +175,7 @@ class TestDefects4J:
         assert bugs is not None
 
         # Run only on the first 3 bugs to not take too long
-        bugs = list(defects4j.get_bugs())[:3]
+        bugs = defects4j.get_bugs()[:3]
         assert bugs is not None
 
         for bug in bugs:

@@ -99,7 +99,7 @@ class TestRunBugRun:
         runbugrun.initialize()
 
         # We only run 3 bugs to not take too long
-        bugs = sorted(list(runbugrun.get_bugs()), key=lambda bug: bug.identifier)[:20]
+        bugs = runbugrun.get_bugs()[:20]
         assert bugs is not None
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:

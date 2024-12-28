@@ -67,7 +67,7 @@ class TestQuixBugs:
         quixbugs.initialize()
 
         # We only run 3 bugs to not take too long
-        bugs = list(quixbugs.get_bugs())[:3]
+        bugs = quixbugs.get_bugs()[:3]
         assert bugs is not None
 
         for bug in bugs:
@@ -114,7 +114,7 @@ class TestQuixBugs:
         assert quixbugs is not None
         quixbugs.initialize()
 
-        bugs = list(quixbugs.get_bugs())
+        bugs = quixbugs.get_bugs()
         assert bugs is not None
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
@@ -138,7 +138,7 @@ class TestQuixBugs:
         quixbugs.initialize()
 
         # We only run 3 bugs to not take too long
-        bugs = list(quixbugs.get_bugs())[:3]
+        bugs = quixbugs.get_bugs()[:3]
         assert bugs is not None
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:

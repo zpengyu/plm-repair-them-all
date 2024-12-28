@@ -62,7 +62,7 @@ class TestGitBugJava:
         gitbugjava.initialize()
 
         # Run only the first 3 bugs to not take too long
-        bugs = list(gitbugjava.get_bugs())[:3]
+        bugs = gitbugjava.get_bugs()[:3]
         assert bugs is not None
 
         for bug in bugs:
@@ -114,7 +114,7 @@ class TestGitBugJava:
         assert gitbugjava is not None
         gitbugjava.initialize()
 
-        bugs = list(gitbugjava.get_bugs())
+        bugs = gitbugjava.get_bugs()
         assert bugs is not None
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
@@ -137,7 +137,7 @@ class TestGitBugJava:
         assert gitbugjava is not None
         gitbugjava.initialize()
 
-        bugs = list(gitbugjava.get_bugs())
+        bugs = gitbugjava.get_bugs()
         assert bugs is not None
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
