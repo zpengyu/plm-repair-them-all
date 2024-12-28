@@ -54,6 +54,9 @@ class Bug(ABC):
     def __repr__(self) -> str:
         return self.get_identifier()
 
+    def __lt__(self, other) -> bool:
+        return self.get_identifier() < other.get_identifier()
+
 
 class RichBug(Bug):
     """
