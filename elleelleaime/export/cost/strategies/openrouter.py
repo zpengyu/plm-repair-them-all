@@ -44,6 +44,10 @@ class OpenRouterCostStrategy(CostStrategy):
             "prompt": 2.0,
             "completion": 10.0,
         },
+        "deepseek-v3": {
+            "prompt": 0.14,
+            "completion": 0.28,
+        },
     }
 
     @staticmethod
