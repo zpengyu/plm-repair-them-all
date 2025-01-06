@@ -1316,13 +1316,13 @@ files = [
 
 [[package]]
 name = "mistralai"
-version = "1.2.5"
+version = "1.2.6"
 description = "Python Client SDK for the Mistral AI API."
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "mistralai-1.2.5-py3-none-any.whl", hash = "sha256:5f0ef2680ead0329569111face1bf2ff7c67c454d43aa0e21324a8faf6c3ab22"},
-    {file = "mistralai-1.2.5.tar.gz", hash = "sha256:05d4130f79704e3b19c0b6320944a348547879fce6894feeb72d9e9d0ee65151"},
+    {file = "mistralai-1.2.6-py3-none-any.whl", hash = "sha256:d9db22ca3a0e029dc2bf8e9380390168440ae4c19d21d212f53ff0d0bd917447"},
+    {file = "mistralai-1.2.6.tar.gz", hash = "sha256:87a2b6fec565e775b0a027474b02be0c219c0a6b787c193ea1c4d12bac08e52e"},
 ]
 
 [package.dependencies]
@@ -1859,8 +1859,8 @@ files = [
 [package.dependencies]
 numpy = [
     {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
-    {version = ">=1.23.2", markers = "python_version == \"3.11\""},
     {version = ">=1.22.4", markers = "python_version < \"3.11\""},
+    {version = ">=1.23.2", markers = "python_version == \"3.11\""},
 ]
 python-dateutil = ">=2.8.2"
 pytz = ">=2020.1"
