@@ -13,3 +13,6 @@
 [submodule "cache"]
 	path = cache
 	url = https://github.com/ASSERT-KTH/elle-elle-aime-cache.git
+[submodule "benchmarks/run_bug_run"]
+	path = benchmarks/run_bug_run
+	url = https://github.com/ASSERT-KTH/run_bug_run.git

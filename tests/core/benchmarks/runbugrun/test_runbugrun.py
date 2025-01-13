@@ -10,17 +10,18 @@ import getpass, tempfile
 import concurrent.futures
 
 
-class TestQuixBugs:
-    def test_get_benchmark(self):
-        quixbugs = get_benchmark("quixbugs")
-        assert quixbugs is not None
-        quixbugs.initialize()
+class TestRunBugRun:
 
-        bugs = quixbugs.get_bugs()
+    def test_get_benchmark(self):
+        runbugrun = get_benchmark("runbugrun")
+        assert runbugrun is not None
+        runbugrun.initialize()
+
+        bugs = runbugrun.get_bugs()
 
         assert bugs is not None
-        assert len(bugs) == 40
-        assert len(set([bug.get_identifier() for bug in bugs])) == 40
+        assert len(bugs)
+        assert len(set([bug.get_identifier() for bug in bugs]))
 
     def checkout_bug(self, bug: Bug) -> bool:
         buggy_path = f"{tempfile.gettempdir()}/elleelleaime-{getpass.getuser()}/{bug.get_identifier()}-buggy-{uuid.uuid4()}"
@@ -36,38 +37,23 @@ class TestQuixBugs:
             assert len(list(Path(buggy_path).glob("**/*"))) > 0
             assert len(list(Path(fixed_path).glob("**/*"))) > 0
 
-            # Assert that we can reach the java file
+            # Assert that we can reach the py file
+            # TODO: this doesn't check correspondence to diff path
             return (
-                Path(
-                    buggy_path, "java_programs", f"{bug.get_identifier()}.java"
-                ).exists()
-                and Path(
-                    fixed_path, "java_programs", f"{bug.get_identifier()}.java"
-                ).exists()
+                Path(buggy_path, "buggy", f"{bug.get_identifier()}.py").exists()
+                and Path(fixed_path, "buggy", f"{bug.get_identifier()}.py").exists()
             )
         finally:
             shutil.rmtree(buggy_path, ignore_errors=True)
             shutil.rmtree(fixed_path, ignore_errors=True)
 
-    @pytest.mark.skip(reason="This test is too slow to run on CI.")
-    def test_checkout_all_bugs(self):
-        quixbugs = get_benchmark("quixbugs")
-        assert quixbugs is not None
-        quixbugs.initialize()
-
-        bugs = quixbugs.get_bugs()
-        assert bugs is not None
-
-        for bug in bugs:
-            assert self.checkout_bug(bug), f"Failed checkout for {bug.get_identifier()}"
-
     def test_checkout_bugs(self):
-        quixbugs = get_benchmark("quixbugs")
-        assert quixbugs is not None
-        quixbugs.initialize()
+        runbugrun = get_benchmark("runbugrun")
+        assert runbugrun is not None
+        runbugrun.initialize()
 
         # We only run 3 bugs to not take too long
-        bugs = quixbugs.get_bugs()[:3]
+        bugs = list(runbugrun.get_bugs())[:3]
         assert bugs is not None
 
         for bug in bugs:
@@ -76,7 +62,6 @@ class TestQuixBugs:
     def run_bug(self, bug: Bug) -> bool:
         buggy_path = f"{tempfile.gettempdir()}/elleelleaime-{getpass.getuser()}/{bug.get_identifier()}-buggy-{uuid.uuid4()}"
         fixed_path = f"{tempfile.gettempdir()}/elleelleaime-{getpass.getuser()}/{bug.get_identifier()}-fixed-{uuid.uuid4()}"
-
         try:
             # Checkout buggy version
             bug.checkout(buggy_path, fixed=False)
@@ -108,37 +93,13 @@ class TestQuixBugs:
             shutil.rmtree(buggy_path, ignore_errors=True)
             shutil.rmtree(fixed_path, ignore_errors=True)
 
-    @pytest.mark.skip(reason="This test is too slow to run on CI.")
-    def test_run_all_bugs(self):
-        quixbugs = get_benchmark("quixbugs")
-        assert quixbugs is not None
-        quixbugs.initialize()
-
-        bugs = quixbugs.get_bugs()
-        assert bugs is not None
-
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-            futures = []
-            futures_to_bugs = {}
-            for bug in bugs:
-                # Submit the bug to be tested as a separate task
-                futures.append(executor.submit(self.run_bug, bug))
-                futures_to_bugs[futures[-1]] = bug
-            # Wait for all tasks to complete
-            for future in tqdm.tqdm(concurrent.futures.as_completed(futures)):
-                result = future.result()
-                if not result:
-                    assert (
-                        result
-                    ), f"Failed run bug for {futures_to_bugs[future].get_identifier()}"
-
     def test_run_bugs(self):
-        quixbugs = get_benchmark("quixbugs")
-        assert quixbugs is not None
-        quixbugs.initialize()
+        runbugrun = get_benchmark("runbugrun")
+        assert runbugrun is not None
+        runbugrun.initialize()
 
         # We only run 3 bugs to not take too long
-        bugs = quixbugs.get_bugs()[:3]
+        bugs = runbugrun.get_bugs()[:20]
         assert bugs is not None
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
@@ -149,7 +110,15 @@ class TestQuixBugs:
                 futures.append(executor.submit(self.run_bug, bug))
                 futures_to_bugs[futures[-1]] = bug
             # Wait for all tasks to complete
-            for future in tqdm.tqdm(concurrent.futures.as_completed(futures)):
+            pbar = tqdm.tqdm(concurrent.futures.as_completed(futures))
+            for future in pbar:
+                pbar.set_postfix(
+                    {
+                        "bug": futures_to_bugs[future].identifier,
+                        "tests": len(bug.failing_tests),
+                    }
+                )
+                pbar.update()
                 result = future.result()
                 if not result:
                     assert (

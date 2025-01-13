@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### Submodules
+## Submodules
 git submodule init;
 git submodule update;
 
@@ -22,3 +22,7 @@ poetry install --no-root;
 if [ -z "$CI" ]; then
  poetry run ./gitbug-java setup;
 fi
+
+cd benchmarks/run_bug_run;
+tar -xvzf buggy_test_results.tgz;
+cd ../..;

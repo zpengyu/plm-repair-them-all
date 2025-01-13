@@ -71,7 +71,7 @@ class TestHumanEvalJava:
         humanevaljava.initialize()
 
         # Run only the first 3 bugs to not take too long
-        bugs = list(humanevaljava.get_bugs())[:3]
+        bugs = humanevaljava.get_bugs()[:3]
         assert bugs is not None
 
         for bug in bugs:
@@ -129,7 +129,7 @@ class TestHumanEvalJava:
         assert humanevaljava is not None
         humanevaljava.initialize()
 
-        bugs = list(humanevaljava.get_bugs())
+        bugs = humanevaljava.get_bugs()
         assert bugs is not None
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
@@ -152,7 +152,7 @@ class TestHumanEvalJava:
         assert humanevaljava is not None
         humanevaljava.initialize()
 
-        bugs = list(humanevaljava.get_bugs())
+        bugs = humanevaljava.get_bugs()
         assert bugs is not None
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
