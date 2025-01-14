@@ -167,13 +167,13 @@ files = [
 
 [[package]]
 name = "anthropic"
-version = "0.34.2"
+version = "0.43.0"
 description = "The official Python library for the anthropic API"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "anthropic-0.34.2-py3-none-any.whl", hash = "sha256:f50a628eb71e2c76858b106c8cbea278c45c6bd2077cb3aff716a112abddc9fc"},
-    {file = "anthropic-0.34.2.tar.gz", hash = "sha256:808ea19276f26646bfde9ee535669735519376e4eeb301a2974fc69892be1d6e"},
+    {file = "anthropic-0.43.0-py3-none-any.whl", hash = "sha256:f748a703f77b3244975e1aace3a935840dc653a4714fb6bba644f97cc76847b4"},
+    {file = "anthropic-0.43.0.tar.gz", hash = "sha256:06801f01d317a431d883230024318d48981758058bf7e079f33fb11f64b5a5c1"},
 ]
 
 [package.dependencies]
@@ -183,8 +183,7 @@ httpx = ">=0.23.0,<1"
 jiter = ">=0.4.0,<1"
 pydantic = ">=1.9.0,<3"
 sniffio = "*"
-tokenizers = ">=0.13.0"
-typing-extensions = ">=4.7,<5"
+typing-extensions = ">=4.10,<5"
 
 [package.extras]
 bedrock = ["boto3 (>=1.28.57)", "botocore (>=1.31.57)"]
@@ -3419,4 +3418,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "acb8d3e4e6a16ed99f1bbeb91a367d5f37fbceaef605a27bbfbb79bb5a49dffb"
+content-hash = "7f8041959ae7b5f0c8c92bb87527b9de959b60ece2fd86c3f704944d42a004cb"
