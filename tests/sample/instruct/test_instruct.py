@@ -6,6 +6,19 @@ import pytest
 import os
 
 
+class TestInstructPromptingBugsInPy:
+    BUGSINPY: Benchmark
+    PROMPT_STRATEGY: str = "instruct"
+
+    @classmethod
+    def setup_class(cls):
+        TestInstructPromptingBugsInPy.BUGSINPY = get_benchmark("bugs_in_py")
+        assert TestInstructPromptingBugsInPy.BUGSINPY is not None
+        TestInstructPromptingBugsInPy.BUGSINPY.initialize()
+
+        # TODO: Implement tests for BugsInPy
+
+
 class TestInstructPromptingDefects4J:
     DEFECTS4J: Benchmark
     PROMPT_STRATEGY: str = "instruct"

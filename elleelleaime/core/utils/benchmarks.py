@@ -12,7 +12,7 @@ benchmarks = {
     "HumanEvalJava": HumanEvalJava,
     "QuixBugs": QuixBugs,
     "GitBugJava": GitBugJava,
-    "BugsInPy": BugsInPy
+    "BugsInPy": BugsInPy,
 }
 
 
