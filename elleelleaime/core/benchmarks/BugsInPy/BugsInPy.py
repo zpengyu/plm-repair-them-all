@@ -6,7 +6,8 @@ from elleelleaime.core.benchmarks.BugsInPy.BugsInPybug import BugsInPyBug
 
 import subprocess
 import logging
-import tqdm
+
+# import tqdm
 import re
 
 # import os
@@ -22,10 +23,9 @@ class BugsInPy(Benchmark):
         super().__init__("BugsInPy", path)
 
     def get_bin(self, options: str = "") -> Optional[str]:
-        return f'{Path(self.path, "framework/bin/bugsinpy-")}'
+        return f'{Path(self.path, "framework/bin/")}'
 
     def initialize(self) -> None:
-        # TODO: Make specific asjustments for BugsInPy when needed
         """
         Initializes the BugsInPy benchmark object by collecting the list of all projects and bugs.
         """
@@ -45,7 +45,8 @@ class BugsInPy(Benchmark):
 
         # Get all bug names for all project_name
         bugs = {}
-        for project_name in tqdm.tqdm(project_names):
+        # for project_name in tqdm.tqdm(project_names):
+        for project_name in project_names:
             run = subprocess.run(
                 f"ls {self.path}/projects/{project_name}/bugs",
                 shell=True,
@@ -60,49 +61,33 @@ class BugsInPy(Benchmark):
                 % (len(bugs[project_name]), project_name)
             )
 
-        # TODO: Check if/how this is doable
         # Initialize dataset
-        # for project_name in project_names:
-        #     # Extract failing test and trigger cause
-        #     run = subprocess.run(
-        #         f"{self.get_bin()} query -p {pid} -q 'tests.trigger,tests.trigger.cause'",
-        #         shell=True,
-        #         capture_output=True,
-        #         check=True,
-        #     )
-        # data = run.stdout.decode("utf-8").split("\n")
-        # df = pd.read_csv(StringIO(data), sep=",", names=["bid", "tests", "errors"])
+        for project_name in project_names:
+            # Create a DataFrame to store the failing test cases and trigger causes
+            df = pd.DataFrame(columns=["bid", "tests", "errors"])
 
-        for bug_id in bugs[project_name]:
-            # Extract ground truth diff
-            # buggy_commit_id -- fixed_commit_id
-            diff_path = f"benchmarks/BugsInPy/framework/projects/{project_name}/bugs/{bug_id}/bug_patch.txt"
-            with open(diff_path, "r", encoding="ISO-8859-1") as diff_file:
-                diff = diff_file.read()
+            for bug_id in bugs[project_name]:
+                # Extract ground truth diff
+                diff_path = f"benchmarks/BugsInPy/framework/projects/{project_name}/bugs/{bug_id}/bug_patch.txt"
+                with open(diff_path, "r", encoding="ISO-8859-1") as diff_file:
+                    diff = diff_file.read()
 
-            # TODO: Check if/how this is doable
-            # Extract failing test cases and trigger causes
-            failing_test_cases = df[df["bug_id"] == bug_id]["tests"].values[0]
-            trigger_cause = df[df["bug_id"] == bug_id]["errors"].values[0]
+                # Extract failing test cases and trigger causes
+                # failing_test_cases = df[df["bug_id"] == bug_id]["tests"].values[0]
+                # trigger_cause = df[df["bug_id"] == bug_id]["errors"].values[0]
 
-            # In file (Figure out how file content will look like): `benchmarks/BugsInPy/projects/{project_name}/{project_name}-fail.txt`
-            fail_path = f"benchmarks/BugsInPy/projects/{project_name}/{project_name}-fail.txt"
-            with open(fail_path, "r", encoding="ISO-8859-1") as fail_file:
-                failing_tests = fail_file.read()
+                # Check with default path
+                fail_path = f"/temp/projects/{project_name}/bugsinpy_fail.txt"
+                with open(fail_path, "r", encoding="ISO-8859-1") as fail_file:
+                    failing_tests_content = fail_file.read()
 
+                # Use a regular expression to extract the test name and its context
+                pattern = r"FAIL: ([\w_.]+ \([\w_.]+\))"
+                matches = re.findall(pattern, failing_tests_content)
 
-            # failing_tests = {}
-            # for failing_test_case in failing_test_cases.split(";"):
-            #     cause = trigger_cause.split(f"{failing_test_case} --> ")[1]
+                # Store the results in a dictionary if needed
+                failing_tests = {"failing_tests": matches}
 
-            # if " --> " in cause:
-            #     while " --> " in cause:
-            #         cause = cause.split(" --> ")[1]
-            #     for test in failing_test_case.split(";"):
-            #         if test in cause:
-            #             cause = cause.replace(test, "")
-            # failing_tests[failing_test_case] = cause.strip()
-
-            self.add_bug(
-                BugsInPyBug(self, project_name, bug_id, diff, failing_tests=None)
-            )
+                self.add_bug(
+                    BugsInPyBug(self, project_name, bug_id, diff, failing_tests)
+                )
