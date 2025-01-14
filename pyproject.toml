@@ -29,7 +29,7 @@ bitsandbytes = "^0.43.1"
 evaluate = "^0.4.2"
 safetensors = "^0.4.3"
 google-generativeai = "^0.7.2"
-anthropic = "^0.34.2"
+anthropic = "^0.43.0"
 mistralai = "^1.2.3"
 
 [tool.poetry.group.dev.dependencies]
