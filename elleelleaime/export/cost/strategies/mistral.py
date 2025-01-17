@@ -15,6 +15,10 @@ class MistralCostStrategy(CostStrategy):
             "prompt": 0.2,
             "completion": 0.6,
         },
+        "codestral-2501": {
+            "prompt": 0.3,
+            "completion": 0.9,
+        },
     }
 
     @staticmethod
